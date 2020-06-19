@@ -6,22 +6,29 @@ import AdminPages from '@/components/admin/AdminPages.vue';
 import Auth from '@/components/auth/Auth.vue'
 import Instituicao from '@/components/view/Instituicao.vue';
 import Especialidade from '@/components/view/Especialidade.vue';
+import Medico from '@/components/view/Medico.vue';
+import Paciente from '@/components/view/Paciente.vue';
+import Usuario from '@/components/view/Usuario.vue';
+import Atestado from '@/components/view/Atestado.vue';
+
+import { userKey } from '@/global'
 
 Vue.use(VueRouter)
 
 const routes = [{
     name: 'home',
-    path: '/',
+    path: '/home',
     component: Home
 },
 {
     name: 'adminPages',
     path: '/admin',
-    component: AdminPages
+    component: AdminPages,
+    meta: { requiresAdmin: true }
 },
 {
     name: 'auth',
-    path: '/auth',
+    path: '/',
     component: Auth
 },
 {
@@ -35,33 +42,41 @@ const routes = [{
     component: Instituicao
 },
 {
-    name: 'medicamento',
-    path: '/medicamento',
-    component: Home
+    name: 'medico',
+    path: '/medico',
+    component: Medico
 },
 {
-    name: 'cid',
-    path: '/cid',
-    component: AdminPages
-},
-{
-    name: 'receita',
-    path: '/receita',
-    component: Home
-},
-{
-    name: 'atestado',
-    path: '/atestado',
-    component: AdminPages
+    name: 'usuario',
+    path: '/usuario',
+    component: Usuario
 },
 {
     name: 'paciente',
     path: '/paciente',
-    component: Home
-}
+    component: Paciente
+},
+{
+    name: 'atestado',
+    path: '/atestado',
+    component: Atestado
+},
 ]
 
-export default new VueRouter({
+ const router = new VueRouter({
     mode: 'history',
     routes
 })
+
+router.beforeEach((to, from, next) => {
+    const json = localStorage.getItem(userKey)
+
+    if(to.matched.some(record => record.meta.requiresAdmin)) {
+        const user = JSON.parse(json)
+        user && user.tipousuario == 1 ? next() : next({ path: '/' })
+    } else {
+        next()
+    }
+})
+
+export default router

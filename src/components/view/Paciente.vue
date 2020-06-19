@@ -1,41 +1,55 @@
 <template>
   <div>
-    <PageTitle  icon="fa fa-university" main="Instituição"/>
+    <PageTitle icon="fa fa-user" main="Pacientes" />
     <b-form>
-      <input type="hidden" id="user-id" v-model="instituicao.id" />
+      <input type="hidden" id="user-id" v-model="paciente.id" />
       <b-row>
         <b-col md="6" sm="12">
-          <b-form-group label="CNPJ:" label-for="instituicao-cnpj">
+          <b-form-group label="Nome:" label-for="paciente-nome">
             <b-form-input
-              id="instituicao-cnpj"
+              id="nomePaciente"
               type="text"
-              v-model="instituicao.cnpj"
+              v-model="paciente.nome"
               required
               :readonly="mode === 'remove'"
-              placeholder="Informe o CNPJ"
+              placeholder="Informe o nome"
             />
           </b-form-group>
         </b-col>
         <b-col md="6" sm="12">
-          <b-form-group label="Razão Social:" label-for="instituicao-razaosocial">
+          <b-form-group label="CPF:" label-for="paciente-cpf">
             <b-form-input
-              id="instituicao-razaosocial"
+              id="cpfPaciente"
               type="text"
-              v-model="instituicao.razaoSocial"
+              v-model="paciente.cpf"
               required
               :readonly="mode === 'remove'"
-              placeholder="Informe o nome da Razão Social"
+              placeholder="Informe o CPF"
             />
           </b-form-group>
         </b-col>
       </b-row>
       <b-row>
         <b-col md="6" sm="12">
-          <b-form-group label="CEP:" label-for="instituicao-cep">
+          <b-form-group label="RG:" label-for="paciente-rg">
             <b-form-input
-              id="instituicao-cep"
+              id="pacienteRg"
               type="text"
-              v-model="instituicao.endereco.cep"
+              v-model="paciente.rg"
+              required
+              :readonly="mode === 'remove'"
+              placeholder="Informe o RG"
+            />
+          </b-form-group>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col md="6" sm="12">
+          <b-form-group label="CEP:" label-for="paciente-cep">
+            <b-form-input
+              id="pacienteCep"
+              type="text"
+              v-model="paciente.endereco.cep"
               @blur.native="buscaCep"
               required
               :readonly="mode === 'remove'"
@@ -44,11 +58,11 @@
           </b-form-group>
         </b-col>
         <b-col md="6" sm="12">
-          <b-form-group label="Logradouro:" label-for="instituicao-logradouro">
+          <b-form-group label="Logradouro:" label-for="paciente-logradouro">
             <b-form-input
-              id="instituicao-logradouro"
+              id="paciente-logradouro"
               type="text"
-              v-model="instituicao.endereco.logradouro"
+              v-model="paciente.endereco.logradouro"
               required
               :readonly="mode === 'remove'"
               placeholder="Informe o Logradouro"
@@ -58,11 +72,11 @@
       </b-row>
       <b-row>
         <b-col md="6" sm="12">
-          <b-form-group label="Bairro:" label-for="instituicao-bairro">
+          <b-form-group label="Bairro:" label-for="paciente-bairro">
             <b-form-input
-              id="instituicao-bairro"
+              id="paciente-bairro"
               type="text"
-              v-model="instituicao.endereco.bairro"
+              v-model="paciente.endereco.bairro"
               required
               :readonly="mode === 'remove'"
               placeholder="Informe o Bairro"
@@ -70,11 +84,11 @@
           </b-form-group>
         </b-col>
         <b-col md="6" sm="12">
-          <b-form-group label="Numero:" label-for="instituicao-numero">
+          <b-form-group label="Numero:" label-for="paciente-numero">
             <b-form-input
-              id="instituicao-numero"
+              id="paciente-numero"
               type="text"
-              v-model="instituicao.endereco.numeroEndereco"
+              v-model="paciente.endereco.numeroEndereco"
               required
               :readonly="mode === 'remove'"
               placeholder="Informe o Numero"
@@ -84,11 +98,11 @@
       </b-row>
       <b-row>
         <b-col md="6" sm="12">
-          <b-form-group label="Cidade:" label-for="instituicao-cidade">
+          <b-form-group label="Cidade:" label-for="paciente-cidade">
             <b-form-input
-              id="instituicao-cidade"
+              id="paciente-cidade"
               type="text"
-              v-model="instituicao.endereco.cidade"
+              v-model="paciente.endereco.cidade"
               required
               :readonly="mode === 'remove'"
               placeholder="Informe a Cidade"
@@ -96,28 +110,14 @@
           </b-form-group>
         </b-col>
         <b-col md="6" sm="12">
-          <b-form-group label="UF:" label-for="instituicao-uf">
+          <b-form-group label="UF:" label-for="paciente-uf">
             <b-form-input
-              id="instituicao-uf"
+              id="paciente-uf"
               type="text"
-              v-model="instituicao.endereco.uf"
+              v-model="paciente.endereco.uf"
               required
               :readonly="mode === 'remove'"
               placeholder="Informe a UF"
-            />
-          </b-form-group>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col md="6" sm="12">
-          <b-form-group label="Complemento:" label-for="instituicao-bairro">
-            <b-form-input
-              id="instituicao-complemento"
-              type="text"
-              v-model="instituicao.endereco.complemento"
-              required
-              :readonly="mode === 'remove'"
-              placeholder="Informe o Complemento"
             />
           </b-form-group>
         </b-col>
@@ -129,50 +129,49 @@
           <b-button class="ml-2" @click="reset">Cancelar</b-button>
         </b-col>
       </b-row>
+      <hr />
+      <div>
+        <Table
+          :items="pacientes"
+          :fields="fields"
+          :current-page="pagina"
+          :perPage="qtnpagina"
+          :loadData="loadPaciente"
+        />
+      </div>
     </b-form>
-    <hr />
-    <div>
-      <Table
-        :items="instituicoes"
-        :fields="fields"
-        :current-page="pagina"
-        :perPage="qtnpagina"
-        :loadData="loadInstituicao"
-      />
-    </div>
   </div>
 </template>
 
 <script>
 import PageTitle from "../template/PageTitle.vue";
-import { baseApiUrl, showError } from "@/global";
+import { showError, baseApiUrl } from "@/global";
 import axios from "axios";
 import Table from "../template/Table";
 import { getCep } from "../../services/cepApi";
 
 export default {
-  name: "Instituicao",
+  name: "Paciente",
   components: { Table, PageTitle },
   data() {
     return {
       pagina: 1,
       qtnpagina: 3,
       mode: "save",
-      instituicao: {
-        cnpj: "",
-        razaoSocial: "",
-        tipoInstituicao: "CONSELHO",
+      paciente: {
+        nome: "",
+        cpf: "",
+        rg: "",
         endereco: {
           logradouro: "",
           bairro: "",
           cep: "",
           cidade: "",
           uf: "",
-          numeroEndereco: "",
-          complemento: ""
+          numeroEndereco: ""
         }
       },
-      instituicoes: [],
+      pacientes: [],
       fields: [
         {
           key: "id",
@@ -180,13 +179,8 @@ export default {
           sortable: true
         },
         {
-          key: "cnpj",
-          label: "CNPJ",
-          sortable: true
-        },
-        {
-          key: "razaoSocial",
-          label: "Razão Social",
+          key: "nome",
+          label: "Nome",
           sortable: true
         },
         {
@@ -198,20 +192,18 @@ export default {
   },
   methods: {
     loadData() {
-      const url = `${baseApiUrl}/instituicoes`;
+      const url = `${baseApiUrl}/pacientes`;
       axios.get(url).then(res => {
-        this.instituicoes = res.data;
+        this.pacientes = res.data;
       });
     },
     reset() {
-      (this.mode = "save"),
-        (this.instituicao = { endereco: {} }),
-        this.loadData();
+      (this.mode = "save"), (this.paciente = { endereco: {} }), this.loadData();
     },
     save() {
-      const method = this.instituicao.id ? "put" : "post";
-      const id = this.instituicao.id ? `/${this.instituicao.id}` : "";
-      axios[method](`${baseApiUrl}/instituicoes${id}`, this.instituicao)
+      const method = this.paciente.id ? "put" : "post";
+      const id = this.paciente.id ? `/${this.paciente.id}` : "";
+      axios[method](`${baseApiUrl}/pacientes${id}`, this.paciente)
         .then(() => {
           this.$toasted.global.defaultSuccess();
           this.reset();
@@ -219,21 +211,21 @@ export default {
         .catch(showError);
     },
     async buscaCep() {
-      const response = await getCep(this.instituicao.endereco.cep);
+      const response = await getCep(this.paciente.endereco.cep);
 
       if (!response) {
         return;
       }
 
       const { street, city, neighborhood, state } = response;
-      this.instituicao.endereco.logradouro = street;
-      this.instituicao.endereco.bairro = neighborhood;
-      this.instituicao.endereco.cidade = city;
-      this.instituicao.endereco.uf = state;
+      this.paciente.endereco.logradouro = street;
+      this.paciente.endereco.bairro = neighborhood;
+      this.paciente.endereco.cidade = city;
+      this.paciente.endereco.uf = state;
     },
     remove() {
-      const id = this.instituicao.id;
-      axios.delete(`${baseApiUrl}/instituicoes/${id}`).then(() => {
+      const id = this.paciente.id;
+      axios.delete(`${baseApiUrl}/pacientes/${id}`).then(() => {
         this.$toasted.global.defaultSuccess();
         this.reset();
       });
@@ -241,9 +233,9 @@ export default {
     linkGen(pageNum) {
       return pageNum === 1 ? "?" : `?page=${pageNum}`;
     },
-    loadInstituicao(instituicao, mode = "save") {
+    loadPaciente(paciente, mode = "save") {
       this.mode = mode;
-      this.instituicao = { ...instituicao };
+      this.paciente = { ...paciente };
     }
   },
   mounted() {

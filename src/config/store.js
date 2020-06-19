@@ -1,17 +1,19 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
 import axios from 'axios'
+import Vue from 'vue'
+import Vuex from 'vuex'
+import { userKey } from "@/global";
 
 Vue.use(Vuex)
+
 
 export default new Vuex.Store({
     state: {
         isMenuVisible: false,
-        user: null
+        isLoginVisible: false,
+        user: null || JSON.parse(localStorage.getItem(userKey))
     },
     mutations: {
         toggleMenu(state, isVisible) {
-
             if(!state.user) {
                 state.isMenuVisible = false
                 return
@@ -24,12 +26,16 @@ export default new Vuex.Store({
             }
         },
         setUser(state, user) {
-            state.user = user 
+            if(!user) {
+                user = state.user
+            }
+            state.user = user
             if(user) {
-                axios.defaults.headers.common['Authorization'] = 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJpc3JhZWwiLCJpbnN0aXR1aWNhbyI6MSwibm9tZSI6IklTUkFFTCBBUkFVSk8iLCJhdXRob3JpdGllcyI6WyJST0xFX0VESVRBX1BBQ0lFTlRFIiwiUk9MRV9SRU1PVkVfUEFDSUVOVEUiLCJST0xFX1JFTEFUT1JJT19NRURJQ08iLCJST0xFX0VESVRBX0RPQ1VNRU5UTyIsIlJPTEVfUkVNT1ZFX0lOU1RJVFVJQ0FPIiwiUk9MRV9DQURBU1RSQV9VU1VBUklPIiwiUk9MRV9DQURBU1RSQV9ET0NVTUVOVE8iLCJST0xFX1JFTU9WRV9ET0NVTUVOVE8iLCJST0xFX0NBREFTVFJBX0VTUEVDSUFMSURBREUiLCJST0xFX1JFTEFUT1JJT19FU1BFQ0lBTElEQURFIiwiUk9MRV9FRElUQV9NRURJQ08iLCJST0xFX1JFTU9WRV9VU1VBUklPIiwiUk9MRV9SRU1PVkVfRVNQRUNJQUxJREFERSIsIlJPTEVfRURJVEFfSU5TVElUVUlDQU8iLCJST0xFX1BFU1FVSVNBX01FRElDQU1FTlRPIiwiUk9MRV9SRUxBVE9SSU9fTUVESUNBTUVOVE8iLCJST0xFX0NBREFTVFJBX0lOU1RJVFVJQ0FPIiwiUk9MRV9SRUxBVE9SSU9fQ0lEIiwiUk9MRV9QRVNRVUlTQV9DSUQiLCJST0xFX0VESVRBX0VTUEVDSUFMSURBREUiLCJST0xFX1JFTEFUT1JJT19ET0NVTUVOVE8iLCJST0xFX1BFU1FVSVNBX01FRElDTyIsIlJPTEVfUEVTUVVJU0FfVVNVQVJJTyIsIlJPTEVfQ0FEQVNUUkFfUEFDSUVOVEUiLCJST0xFX1JFTEFUT1JJT19JTlNUSVRVSUNBTyIsIlJPTEVfUEVTUVVJU0FfRVNQRUNJQUxJREFERSIsIlJPTEVfUEVTUVVJU0FfUEFDSUVOVEUiLCJST0xFX1BFU1FVSVNBX0RPQ1VNRU5UTyIsIlJPTEVfUEVTUVVJU0FfSU5TVElUVUlDQU8iLCJST0xFX0NBREFTVFJBX01FRElDTyIsIlJPTEVfUkVNT1ZFX01FRElDTyIsIlJPTEVfUkVMQVRPUklPX1BBQ0lFTlRFIiwiUk9MRV9FRElUQV9VU1VBUklPIl0sImNsaWVudF9pZCI6ImFuZ3VsYXIiLCJuaXZlbGRlYWNlc3NvIjoxMCwidGlwb3VzdWFyaW8iOjEsInNjb3BlIjpbInJlYWQiLCJ3cml0ZSJdLCJtYXRyaWN1bGEiOiJpc3JhZWwiLCJwcmltZWlyb2FjZXNzbyI6dHJ1ZSwiaWQiOjIsImV4cCI6MTU5MTE2NzA4OSwianRpIjoiZTI2Zjc3OTAtYzE5Ny00ZTYyLWE3YjMtYTlkYThhOWMxNGMxIn0.MAsELBDo7a5dLahyxSKSpsy1MJ1XZgSPJW_K1Tkw494'
+                axios.defaults.headers.common['Authorization'] = `bearer ${user.access_token}`
                 state.isMenuVisible = true
+                state.isLoginVisible = true
             } else {
-                delete axios.headers.common['Authorization']
+                delete axios.defaults.headers.common['Authorization']
                 state.isMenuVisible = false
             }
         }
